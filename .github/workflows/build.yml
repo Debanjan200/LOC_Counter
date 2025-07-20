@@ -1,0 +1,27 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main, dev_feature]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: 📦 Build project
+        run: cargo build --release
+
+      - name: ✅ Run tests
+        run: cargo test --verbose
