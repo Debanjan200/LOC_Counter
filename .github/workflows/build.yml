@@ -23,5 +23,14 @@ jobs:
       - name: 📦 Build project
         run: cargo build --release
 
-      - name: ✅ Run tests
-        run: cargo test --verbose
+      - name: ✅ Run tests (verbose)
+        run: cargo test --verbose -- --nocapture
+
+      - name: ✅ Run tests and save output
+        run: cargo test -- --nocapture > test-report.txt
+
+      - name: 📤 Upload test report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-test-report
+          path: test-report.txt

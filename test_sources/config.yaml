@@ -1,0 +1,10 @@
+# Top-level comment
+
+version: "1.0"
+
+# Service configuration
+service:
+  name: test_service  # Inline comment
+  enabled: true
+
+# End of config

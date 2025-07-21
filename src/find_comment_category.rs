@@ -5,6 +5,7 @@ pub struct CommentStyle<'a> {
     pub line: &'a str,                    // line comment symbol
     pub multiline_start: Option<&'a str>, // optional block start
     pub multiline_end: Option<&'a str>,   // optional block end
+    pub alt_multiline: Option<(&'a str, &'a str)>
 }
 
 pub struct FindTypeOfComment<'a> {
@@ -21,6 +22,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "//",
                 multiline_start: Some("/*"),
                 multiline_end: Some("*/"),
+                alt_multiline: None
             },
         );
 
@@ -28,8 +30,9 @@ impl<'a> FindTypeOfComment<'a> {
             "py",
             CommentStyle {
                 line: "#",
-                multiline_start: Some("\"\"\""),
-                multiline_end: Some("\"\"\""),
+                multiline_start: Some("'''"),
+                multiline_end: Some("'''"),
+                alt_multiline: Some(("\"\"\"", "\"\"\"")),
             },
         );
 
@@ -39,6 +42,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "//",
                 multiline_start: Some("/*"),
                 multiline_end: Some("*/"),
+                alt_multiline: None
             },
         );
 
@@ -48,6 +52,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "#",
                 multiline_start: None,
                 multiline_end: None,
+                alt_multiline: None
             },
         );
 
@@ -57,6 +62,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "//",
                 multiline_start: Some("/*"),
                 multiline_end: Some("*/"),
+                alt_multiline: None
             },
         );
 
@@ -66,6 +72,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "//",
                 multiline_start: Some("/*"),
                 multiline_end: Some("*/"),
+                alt_multiline: None
             },
         );
 
@@ -75,6 +82,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "//",
                 multiline_start: Some("/*"),
                 multiline_end: Some("*/"),
+                alt_multiline: None
             },
         );
 
@@ -84,6 +92,7 @@ impl<'a> FindTypeOfComment<'a> {
                 line: "#",
                 multiline_start: None,
                 multiline_end: None,
+                alt_multiline: None
             },
         );
 

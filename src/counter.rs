@@ -19,8 +19,8 @@ pub fn count_lines(
         .into_iter()
         .filter_map(Result::ok)
         .filter(|entry| {
-            // Skip if file is in or under any excluded dir
             let path = entry.path();
+
             for excl in exclude_dirs {
                 if path.starts_with(excl) || path.components().any(|c| excl.ends_with(c)) {
                     return false;
@@ -34,12 +34,8 @@ pub fn count_lines(
             let ext_opt = path.extension().and_then(|s| s.to_str());
 
             match ext_filter {
-                Some(requested_ext) => {
-                    ext_opt.map_or(false, |ext| ext == requested_ext)
-                }
-                None => {
-                    ext_opt.map_or(false, |ext| style_finder.get_comment_style(ext).is_some())
-                }
+                Some(requested_ext) => ext_opt.map_or(false, |ext| ext == requested_ext),
+                None => ext_opt.map_or(false, |ext| style_finder.get_comment_style(ext).is_some()),
             }
         })
         .map(|e| e.path().to_path_buf())
@@ -53,7 +49,9 @@ pub fn count_lines(
                 if let Ok(f) = File::open(&file) {
                     let reader = BufReader::new(f);
                     let mut stats = LineStats::default();
+
                     let mut in_multiline = false;
+                    let mut multiline_delim: Option<&str> = None;
 
                     for line in reader.lines().flatten() {
                         stats.total += 1;
@@ -66,9 +64,10 @@ pub fn count_lines(
 
                         if in_multiline {
                             stats.comments += 1;
-                            if let Some(end) = style.multiline_end {
+                            if let Some(end) = multiline_delim {
                                 if trimmed.contains(end) {
                                     in_multiline = false;
+                                    multiline_delim = None;
                                 }
                             }
                             continue;
@@ -76,20 +75,36 @@ pub fn count_lines(
 
                         if trimmed.starts_with(style.line) {
                             stats.comments += 1;
-                        } else if let Some(start) = style.multiline_start {
+                            continue;
+                        }
+
+                        // Primary multiline
+                        if let Some(start) = style.multiline_start {
                             if trimmed.starts_with(start) {
                                 stats.comments += 1;
                                 if let Some(end) = style.multiline_end {
-                                    if !trimmed.contains(end) {
+                                    if !(trimmed.contains(end) && trimmed.find(start) != trimmed.rfind(end)) {
                                         in_multiline = true;
+                                        multiline_delim = Some(end);
                                     }
                                 }
-                            } else {
-                                stats.code += 1;
+                                continue;
                             }
-                        } else {
-                            stats.code += 1;
                         }
+
+                        // Optional alt multiline (Python """ or ''')
+                        if let Some((alt_start, alt_end)) = style.alt_multiline {
+                            if trimmed.starts_with(alt_start) {
+                                stats.comments += 1;
+                                if !(trimmed.contains(alt_end) && trimmed.find(alt_start) != trimmed.rfind(alt_end)) {
+                                    in_multiline = true;
+                                    multiline_delim = Some(alt_end);
+                                }
+                                continue;
+                            }
+                        }
+
+                        stats.code += 1;
                     }
 
                     results.insert(file, stats);
