@@ -1,0 +1,50 @@
+{
+  "rs": {
+    "line": "//",
+    "multiline_start": "/*",
+    "multiline_end": "*/",
+    "alt_multiline": null
+  },
+  "py": {
+    "line": "#",
+    "multiline_start": "'''",
+    "multiline_end": "'''",
+    "alt_multiline": ["\"\"\"", "\"\"\""]
+  },
+  "cpp": {
+    "line": "//",
+    "multiline_start": "/*",
+    "multiline_end": "*/",
+    "alt_multiline": null
+  },
+  "sh": {
+    "line": "#",
+    "multiline_start": null,
+    "multiline_end": null,
+    "alt_multiline": null
+  },
+  "js": {
+    "line": "//",
+    "multiline_start": "/*",
+    "multiline_end": "*/",
+    "alt_multiline": null
+  },
+  "java": {
+    "line": "//",
+    "multiline_start": "/*",
+    "multiline_end": "*/",
+    "alt_multiline": null
+  },
+  "c": {
+    "line": "//",
+    "multiline_start": "/*",
+    "multiline_end": "*/",
+    "alt_multiline": null
+  },
+  "yaml": {
+    "line": "#",
+    "multiline_start": null,
+    "multiline_end": null,
+    "alt_multiline": null
+  }
+}

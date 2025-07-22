@@ -31,11 +31,15 @@ struct Args {
     /// List of directories to exclude from counting
     #[arg(long, value_delimiter = ',')]
     exclude: Vec<PathBuf>,
+
+    /// Output file (only works with --format json)
+    #[arg(long)]
+    comment_style_json_path: Option<PathBuf>,
 }
 
 fn main() {
     let args = Args::parse();
-    let result = count_lines(&args.path, args.ext.as_deref(), &args.exclude);
+    let result = count_lines(&args.path, args.ext.as_deref(), &args.exclude, args.comment_style_json_path);
 
     match args.format {
         OutputFormat::Plain => {
