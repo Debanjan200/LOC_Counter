@@ -11,9 +11,16 @@ pub fn count_lines(
     path: &Path,
     ext_filter: Option<&str>,
     exclude_dirs: &[PathBuf],
+    cmt_style_json_path: Option<PathBuf>
 ) -> HashMap<PathBuf, LineStats> {
     let mut results = HashMap::new();
-    let style_finder = FindTypeOfComment::new();
+    let mut style_finder = FindTypeOfComment::new();
+
+    if let Some(cmt_path) = cmt_style_json_path{
+        style_finder.extract_from_json(cmt_path);
+    }else{
+        style_finder.default_set_style();
+    }
 
     let files: Vec<_> = WalkDir::new(path)
         .into_iter()
@@ -73,16 +80,16 @@ pub fn count_lines(
                             continue;
                         }
 
-                        if trimmed.starts_with(style.line) {
+                        if trimmed.starts_with(&style.line) {
                             stats.comments += 1;
                             continue;
                         }
 
                         // Primary multiline
-                        if let Some(start) = style.multiline_start {
+                        if let Some(ref start) = style.multiline_start {
                             if trimmed.starts_with(start) {
                                 stats.comments += 1;
-                                if let Some(end) = style.multiline_end {
+                                if let Some(ref end) = style.multiline_end {
                                     if !(trimmed.contains(end) && trimmed.find(start) != trimmed.rfind(end)) {
                                         in_multiline = true;
                                         multiline_delim = Some(end);
@@ -93,7 +100,7 @@ pub fn count_lines(
                         }
 
                         // Optional alt multiline (Python """ or ''')
-                        if let Some((alt_start, alt_end)) = style.alt_multiline {
+                        if let Some((ref alt_start, ref alt_end)) = style.alt_multiline {
                             if trimmed.starts_with(alt_start) {
                                 stats.comments += 1;
                                 if !(trimmed.contains(alt_end) && trimmed.find(alt_start) != trimmed.rfind(alt_end)) {
